@@ -84,30 +84,14 @@ Chunk::Chunk(int chunkX_, int chunkZ_):
 
     {
         int index = -1;
-        //int newSize = size / skip;
         for(int z = 0; z < size - 1; ++z){
             for(int x = 0; x < size - 1; ++x){
-                //for(int z = 0; z < size - 1; z += skip){
-                //    for(int x = 0; x < size - 1; x += skip){
-
-                //int start = z * size + x;
-                //int TL = start;
-                //int TR = start + skip;
-                //int BL = start + size;
-                //int BR = start + skip + size;
 
                 int start = z * size + x;
                 int TL = start;
                 int TR = start + 1;
                 int BL = start + size;
                 int BR = start + 1 + size;
-
-                //indices[index++] = BL;
-                //indices[index++] = BR;
-                //indices[index++] = TR;
-                //indices[index++] = BL;
-                //indices[index++] = TR;
-                //indices[index++] = TL;
 
                 if(abs(data[TR].y - data[BL].y) < abs(data[TL].y - data[BR].y)){
                     indices[++index] = TR;
@@ -127,83 +111,65 @@ Chunk::Chunk(int chunkX_, int chunkZ_):
                     indices[++index] = BR;
                 }
 
-                /*if(abs(data[TR].y - data[BL].y) < abs(data[TL].y - data[BR].y)){
-                  indices[index += skip] = TR;
-                  indices[index += skip] = BL;
-                  indices[index += skip] = BR;
-
-                  indices[index += skip] = TR;
-                  indices[index += skip] = TL;
-                  indices[index += skip] = BL;
-                  } else {
-                  indices[index += skip] = TL;
-                  indices[index += skip] = BL;
-                  indices[index += skip] = BR;
-
-                  indices[index += skip] = TR;
-                  indices[index += skip] = TL;
-                  indices[index += skip] = BR;
-                  }
-                  */
             }
-            }
-            }
-
-            {
-                for(int i = 0; i < numIndices; i += 3){
-                    vec3 &v0 = data[indices[i + 0]];
-                    vec3 &v1 = data[indices[i + 1]];
-                    vec3 &v2 = data[indices[i + 2]];
-
-                    vec3 normal = normalize(cross(v1 - v0, v2 - v0));
-
-                    normals[indices[i + 0]] += normal;
-                    normals[indices[i + 1]] += normal;
-                    normals[indices[i + 2]] += normal;
-                }
-                for(unsigned int i = 0; i < numIndices; ++i){
-                    normals[i] = normalize(normals[i]);
-                }
-            }
-
         }
+    }
 
-        void Chunk::upload(){
-            //remove?
-            glBindVertexArray(0);
-            glGenVertexArrays(1, &vao);
-            glBindVertexArray(vao);
+    {
+        for(int i = 0; i < numIndices; i += 3){
+            vec3 &v0 = data[indices[i + 0]];
+            vec3 &v1 = data[indices[i + 1]];
+            vec3 &v2 = data[indices[i + 2]];
 
-            glGenBuffers(1, &vbo);
-            glBindBuffer(GL_ARRAY_BUFFER, vbo);
-            glBufferData(GL_ARRAY_BUFFER, size * size * sizeof(vec3), data, GL_STATIC_DRAW);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), 0);
-            glEnableVertexAttribArray(0);
+            vec3 normal = normalize(cross(v1 - v0, v2 - v0));
 
-            glGenBuffers(1, &normalBuffer);
-            glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
-            glBufferData(GL_ARRAY_BUFFER, numIndices * sizeof(vec3), normals, GL_STATIC_DRAW);
-            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), 0);
-            glEnableVertexAttribArray(1);
-
-            glGenBuffers(1, &ebo);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices * sizeof(GLushort), indices, GL_STATIC_DRAW);
-
-            delete[] data;
-            delete[] normals;
-            delete[] indices;
+            normals[indices[i + 0]] += normal;
+            normals[indices[i + 1]] += normal;
+            normals[indices[i + 2]] += normal;
         }
-
-        Chunk::~Chunk(){
-            --numChunks;
-            glDeleteBuffers(1, &vbo);
-            glDeleteBuffers(1, &ebo);
-            glDeleteVertexArrays(1, &vao);
+        for(unsigned int i = 0; i < numIndices; ++i){
+            normals[i] = normalize(normals[i]);
         }
+    }
 
-        void Chunk::render() const {
-            glBindVertexArray(vao);
-            glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0);
-            glBindVertexArray(0);
-        }
+}
+
+void Chunk::upload(){
+    //remove?
+    glBindVertexArray(0);
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, size * size * sizeof(vec3), data, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), 0);
+    glEnableVertexAttribArray(0);
+
+    glGenBuffers(1, &normalBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
+    glBufferData(GL_ARRAY_BUFFER, numIndices * sizeof(vec3), normals, GL_STATIC_DRAW);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), 0);
+    glEnableVertexAttribArray(1);
+
+    glGenBuffers(1, &ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices * sizeof(GLushort), indices, GL_STATIC_DRAW);
+
+    delete[] data;
+    delete[] normals;
+    delete[] indices;
+}
+
+Chunk::~Chunk(){
+    --numChunks;
+    glDeleteBuffers(1, &vbo);
+    glDeleteBuffers(1, &ebo);
+    glDeleteVertexArrays(1, &vao);
+}
+
+void Chunk::render() const {
+    glBindVertexArray(vao);
+    glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0);
+    glBindVertexArray(0);
+}
