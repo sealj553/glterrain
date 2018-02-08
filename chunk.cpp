@@ -48,9 +48,9 @@ inline float noise2(float x, float z){
 }
 
 float Chunk::getHeight(float x, float z){
-    float y = 1-pow(noise1(x, z), 2);
-    y *= noise2(x, z);
-    //float y = noise2(x, z);
+    //float y = 1-pow(noise1(x, z), 2);
+    float y = noise2(x, z);
+    y *= noise1(x, z);
 
     //y = abs(pow(y, 2));
     //y = pow(y, 2.0f); //great for islands
