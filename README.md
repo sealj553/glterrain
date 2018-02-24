@@ -16,8 +16,8 @@ Screenshot:
 ![screenshot](screenshot.png)
 
 TODO:
-*~~Add basic chunking~~
-*Fix normals at chunk boundaries
-*Implement dynamic chunking based on camera location
-*Implement simple LOD (Level of Detail) based on camera distance
-*Implement frustum culling of chunks
+* ~~Add basic chunking~~
+* Fix normals at chunk boundaries
+* Implement dynamic chunking based on camera location
+* Implement simple LOD (Level of Detail) based on camera distance
+* Implement frustum culling of chunks
