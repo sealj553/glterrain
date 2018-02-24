@@ -9,8 +9,8 @@ Dependencies:
 * SOIL
 
 Uses:
-* FastNoise
-* Imgui
+* [FastNoise](https://github.com/Auburns/FastNoise)
+* [Imgui](https://github.com/ocornut/imgui)
 
 Screenshot:
 ![screenshot](screenshot.png)
