@@ -1,4 +1,4 @@
-TARGET := run
+TARGET := glterrain
 
 CXX := g++
 
